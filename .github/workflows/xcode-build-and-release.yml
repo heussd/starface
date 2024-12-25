@@ -17,5 +17,19 @@ jobs:
       - name: Build
         run: |
           xcodebuild clean build
-
-          
+      - name: zip
+        run: |
+          cd build/Release
+          zip -r starface.app.zip starface.app
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+      - name: Release
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "${{steps.date.outputs.date}}"
+          prerelease: false
+          title: "Release ${{steps.date.outputs.date}}"
+          files: |
+            build/Release/starface.app.zip
